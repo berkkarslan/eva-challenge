@@ -1,32 +1,42 @@
-<template>
-  <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
-    <router-view/>
-  </div>
-</template>
-
-<style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
-
-#nav {
-  padding: 30px;
-
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
+<script>
+export default {
+  methods: {
+    logout () {
+      this.$store.dispatch('logout')
+      this.$router.push('/login')
     }
   }
 }
+</script>
+
+<template>
+  <b-container class="mt-3 position-relative">
+    <b-row class="border-bottom">
+      <b-col>
+        <b-row>
+          <b-col
+            class="d-flex justify-content-center justify-content-md-start col-sm-12 col-md-6"
+          >
+            <router-link to="/"> Home </router-link>
+          </b-col>
+          <b-col
+            class="d-flex justify-content-md-end justify-content-center col-sm-12 col-md-6"
+          >
+            <div v-if="$store.getters.isLoggedIn">
+              <b-button @click="logout" variant="link">Logout</b-button>
+            </div>
+          </b-col>
+        </b-row>
+      </b-col>
+    </b-row>
+    <b-row class="d-flex justify-content-center mt-3">
+      <b-col class="col-md-12 col-lg-10">
+        <router-view />
+      </b-col>
+    </b-row>
+  </b-container>
+</template>
+
+<style lang="scss">
+@import "./assets/style.css";
 </style>
