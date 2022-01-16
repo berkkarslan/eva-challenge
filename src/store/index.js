@@ -60,6 +60,32 @@ export default new Vuex.Store({
       return axios.post('/data/sales-finances', obj).then((response) => {
         return response.data
       })
+    },
+    // eslint-disable-next-line no-empty-pattern
+    getSalesExpanse ({}, date) {
+      if (typeof date === 'string') {
+        const arr = date.split('-')
+        const obj = {
+          marketplace: 'Amazon.com',
+          sellerId: 'A2AYEFBRNOKNF9',
+          date: {
+            month: arr[1],
+            year: arr[0]
+          }
+        }
+        return axios.post('/data/sales-expense-by-request-date/', obj).then((response) => {
+          return response.data
+        })
+      } else {
+        const obj = {
+          marketplace: 'Amazon.com',
+          sellerId: 'A2AYEFBRNOKNF9',
+          day: 30
+        }
+        return axios.post('/data/sales-expense', obj).then((response) => {
+          return response.data
+        })
+      }
     }
   },
   modules: {}

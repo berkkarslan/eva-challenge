@@ -47,6 +47,16 @@ export default {
         plotOptions: {
           column: {
             stacking: 'normal'
+          },
+          series: {
+            cursor: 'pointer',
+            point: {
+              events: {
+                click: ({ point }) => {
+                  this.$emit('clicked', point.category)
+                }
+              }
+            }
           }
         },
 

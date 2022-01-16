@@ -1,15 +1,22 @@
 <template>
-  <div style="width:100%">
+  <div class="w-100">
+    <div class="pie-chart-dropdown">
+        <b-form-select v-model="selectedDate" :options="dropdownOptions" @input="dateChanged"></b-form-select>
+    </div>
     <highcharts :options="chartOptions" :highcharts="hcInstance"></highcharts>
   </div>
 </template>
 <script>
 import Highcharts from 'highcharts'
 export default {
-  props: { data: { type: Object, required: true } },
+  props: {
+    data: { type: Object, required: true },
+    dropdownOptions: { type: Array }
+  },
   name: 'PieChart',
   data () {
     return {
+      selectedDate: 30,
       hcInstance: Highcharts,
       chartOptions: {
         chart: {
@@ -23,19 +30,22 @@ export default {
           align: 'left'
         },
         tooltip: {
-          pointFormat: '{series.name}: <b>{point.percentage:.1f}</b>'
-        },
-        accessibility: {
-          point: {
-            valueSuffix: '$'
+          pointFormatter: function () {
+            return '$' + Highcharts.numberFormat(this.y, 2, '.', ',')
           }
         },
         legend: {
-          align: 'right',
+          enabled: true,
           layout: 'vertical',
-          verticalAlign: 'center',
-          x: 0,
-          y: 0
+          align: 'right',
+          width: 350,
+          verticalAlign: 'middle',
+          useHTML: true,
+          title: {
+          },
+          labelFormatter: function () {
+            return '<div style="text-align: left; width:330px;float:left;">' + this.name + ' <span style="float:right">$' + Highcharts.numberFormat(this.y, 2) + '</span></div>'
+          }
         },
         plotOptions: {
           pie: {
@@ -47,41 +57,43 @@ export default {
             }
           }
         },
-        series: [{
-          name: 'Brands',
-          colorByPoint: true,
-          data: [{
-            name: 'Chrome',
-            y: 61.41,
-            sliced: true,
-            selected: true
-          }, {
-            name: 'Internet Explorer',
-            y: 11.84
-          }, {
-            name: 'Firefox',
-            y: 10.85
-          }, {
-            name: 'Edge',
-            y: 4.67
-          }, {
-            name: 'Safari',
-            y: 4.18
-          }, {
-            name: 'Sogou Explorer',
-            y: 1.64
-          }, {
-            name: 'Opera',
-            y: 1.6
-          }, {
-            name: 'QQ',
-            y: 1.2
-          }, {
-            name: 'Other',
-            y: 2.61
-          }]
-        }]
+        series: []
       }
+    }
+  },
+  watch: {
+    data (val) {
+      this.updateSeries(val)
+    }
+  },
+  created () {
+    this.updateSeries(this.data)
+  },
+  methods: {
+    updateSeries (series) {
+      if (series.selectedDate) {
+        this.selectedDate = series.selectedDate
+      }
+      this.chartOptions.legend.title = {
+        text: '<div style="text-align:left;width:350px;">Total Expenses <span style="float:right">$' + series.totalExpenses.toLocaleString('en') + '</span></div>',
+        style: {
+          fontSize: '1.1em'
+        }
+      }
+      const arr = series.items.filter((el) => el.amount > 0).map((el) => {
+        return {
+          name: el.type,
+          y: el.amount
+        }
+      })
+      this.chartOptions.series = [{
+        name: '',
+        colorByPoint: true,
+        data: arr
+      }]
+    },
+    dateChanged (e) {
+      this.$emit('date-changed', e)
     }
   }
 }
