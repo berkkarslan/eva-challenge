@@ -37,6 +37,6 @@ export default {
   </b-container>
 </template>
 
-<style lang="scss">
+<style>
 @import "./assets/style.css";
 </style>
